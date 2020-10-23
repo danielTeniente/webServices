@@ -1,5 +1,4 @@
 import React from 'react';
-import {View, ActivityIndicator, Text, Pressable, StyleSheet, FlatList} from 'react-native';
 import Character from './Character'
 import CharacterDetail from './CharacterDetail'
 import {createStackNavigator} from '@react-navigation/stack';
@@ -19,6 +18,8 @@ class MainScreen extends React.Component{
             >
             <Stack.Screen name='Character' 
             component={Character}></Stack.Screen>
+            <Stack.Screen name='CharacterDetail' 
+            component={CharacterDetail}></Stack.Screen>
 
             </Stack.Navigator>
         );
