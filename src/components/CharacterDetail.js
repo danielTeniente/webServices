@@ -1,33 +1,37 @@
 import React from 'react';
-import {View, ActivityIndicator, Text, Pressable, StyleSheet, Image} from 'react-native';
+import {View, ActivityIndicator, Text, FlatList, StyleSheet, Image} from 'react-native';
 import Http from '../libs/http';
 
 class CharacterDetail extends React.Component{
 
     state={
         loading: false,
-        character: null
+        character: null,
+        episodes: [],
     }
 
     componentDidMount = async ()=>{
         this.setState({loading:true});
         const res = await Http.instance.get(this.props.route.params.character_url);
-        this.setState({loading:false, character: res});
+        this.setState({character: res});
+        const {character} = this.state 
+        if(character){
+            let episodes_info = []
+            //console.log(character.episode)
+            for (let i in character.episode){
+                //console.log(character.episode[i]);
+                episodes_info.push(await Http.instance.get(character.episode[i]));
+            }
+            
+            this.setState({episodes:episodes_info})
+        }
+        this.setState({loading:false});
     }
 
     render(){
-        const {character, loading} = this.state;
+        const {character, loading, episodes} = this.state;
         return(
             <View>
-                {loading?
-                <ActivityIndicator 
-                    color='#000' 
-                    size='large'
-                    style={styles.loader}
-                    >
-                </ActivityIndicator>
-                :null
-                }                
                 {character?
                     <View style={styles.container}>
                         <Image source={{uri:character.image}}
@@ -42,6 +46,22 @@ class CharacterDetail extends React.Component{
                     </View>
                 :null
                 }
+                {loading?
+                <ActivityIndicator 
+                    color='#000' 
+                    size='large'
+                    style={styles.loader}
+                    >
+                </ActivityIndicator>
+                :
+                    <FlatList
+                    style={styles.episode_list}
+                    data={episodes}
+                    renderItem={
+                    ({item}) => <Text style={styles.text}>{item.name}</Text>
+                    }>
+                    </FlatList>
+                }                
             </View>
         );
     }
@@ -50,7 +70,7 @@ class CharacterDetail extends React.Component{
 const styles = StyleSheet.create({
     container: {
         width:'100%',
-        height: '100%',
+        height: '50%',
         backgroundColor: '#67dd23',
         alignItems:'center'
     },
@@ -60,12 +80,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
         width:'100%'
     },
+    episode_list:{
+        padding:20,
+        backgroundColor: '#000',
+        width:'100%'
+    },
     loader:{
         marginTop:10,
     },
     image: {
         marginTop:20,
-        width: '80%',
+        width: '50%',
         height: '50%',
     },
     text:{
