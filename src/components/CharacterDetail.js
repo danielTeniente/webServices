@@ -48,7 +48,7 @@ class CharacterDetail extends React.Component{
                 }
                 {loading?
                 <ActivityIndicator 
-                    color='#000' 
+                    color='#005' 
                     size='large'
                     style={styles.loader}
                     >
